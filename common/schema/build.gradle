@@ -92,8 +92,7 @@ task configureSchemaCommon(type: SqlExecutor) {
     }
     database = [dbUri, dbUser, dbPwd]
     sqlFiles = [
-        // TODO: would ....text work, too?
-        rootProject.file('comment_on_schema.sql').getAbsolutePath()
+        rootProject.file('comment_on_schema.sql').getPath()
     ]
     sqlParameters = [dbSchema: schemaName]
 }
