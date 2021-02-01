@@ -1,0 +1,99 @@
+import ch.so.agi.gretl.tasks.*
+import ch.so.agi.gretl.api.TransferSet
+
+apply plugin: 'ch.so.agi.gretl'
+
+
+// Load properties file which is located in the root project directory
+def createSchemaProperties = new Properties()
+rootProject.file('createSchema.properties').withInputStream { createSchemaProperties.load(it) }
+
+// Get the suffix of the schema directory (if any)
+// TODO: won't work for pub schemas (..._pub_v1)
+def schemaSuffix = ''
+if ( project.property('schemaDirName').split('_').size() > 1 ) {
+    schemaSuffix = '_' + project.property('schemaDirName').split('_').last()
+}
+
+// Get the schema name either from the properties file if it's set,
+// or construct the schema name from the topic directory name and the schema directory suffix
+def schemaName = createSchemaProperties.getProperty('schemaName') ?: project.property('topicName') + schemaSuffix
+// (this uses the Elvis operator, http://groovy-lang.org/operators.html#_elvis_operator)
+
+// Determine automatically in which DB to create the schema
+// TODO: won't work (..._pub_v1)
+def targetDbName = ( project.property('schemaDirName').endsWith('_pub')  ) ? 'pub' : 'edit'
+// However, if the dbName property is set it must override the default
+if ( project.hasProperty('dbName') ) {
+    targetDbName = project.property('dbName')
+}
+
+def dbUri = ( targetDbName == 'pub' ) ? project.property('dbUriPub') : project.property('dbUriEdit')
+def dbUser = ( targetDbName == 'pub' ) ? project.property('dbUserPub') : project.property('dbUserEdit')
+def dbPwd = ( targetDbName == 'pub' ) ? project.property('dbPwdPub') : project.property('dbPwdEdit')
+
+
+
+task dropSchemaCommon(type: SqlExecutor) {
+    group = 'Drop schema'
+    description = 'Drop DB schema and schema roles if they exist'
+    doLast {
+        println "DB schema ${schemaName} and schema roles dropped (or they did not exist)"
+    }
+    database = [dbUri, dbUser, dbPwd]
+    sqlFiles = ['drop_schema.sql', 'drop_role.sql']
+    // Dies wird z.B.bei Publikationsschemen, die zusätzlich auch auf der Edit-DB vorhanden sein müssen, Probleme machen; Abhilfe: Die Rollennamen sollen auch die DB-Namen enthalten, z.B.: editdb_arp_nutzungsplanung_pub_read, pubdb_arp_nutzungsplanung_pub_read; oder noch besser: Falls man in Jenkins die voreingestellte DB umstellt, wird zusätzlich ein Parameter rolePrefix o.ä. gesetzt, und es wird nur dann der DB-Name dem Gruppennamen vorangestellt.
+    sqlParameters = [dbSchema: schemaName]
+}
+
+task createRolesCommon(type: SqlExecutor) {
+    group = 'Create schema'
+    description = 'Create roles for reading from and writing to the DB schema'
+    doLast {
+        println "DB schema roles for schema ${schemaName} created"
+    }
+    database = [dbUri, dbUser, dbPwd]
+    sqlFiles = ['create_role.sql']
+    sqlParameters = [dbSchema: schemaName]
+}
+
+task createSchemaCommon(type: Ili2pgImportSchema) {
+    group = 'Create schema'
+    description = 'Create DB schema and tables according to INTERLIS model'
+    dependsOn 'createRolesCommon'
+    doLast {
+        println "DB schema ${schemaName} and tables created"
+    }
+    database = [dbUri, dbUser, dbPwd]
+    dbschema = schemaName
+    models = createSchemaProperties.getProperty('models')
+    // uses the Elvis operator, http://groovy-lang.org/operators.html#_elvis_operator
+    defaultSrsCode = createSchemaProperties.getProperty('defaultSrsCode') ?: 2056
+    createGeomIdx = createSchemaProperties.getProperty('createGeomIdx') ?: true
+    createFk = createSchemaProperties.getProperty('createFk') ?: true
+    createFkIdx = createSchemaProperties.getProperty('createFkIdx') ?: true
+    createUnique = createSchemaProperties.getProperty('createUnique') ?: true
+    createEnumTabs = createSchemaProperties.getProperty('createEnumTabs') ?: true
+    beautifyEnumDispName = createSchemaProperties.getProperty('beautifyEnumDispName') ?: true
+    createMetaInfo = createSchemaProperties.getProperty('createMetaInfo') ?: true
+    createNumChecks = createSchemaProperties.getProperty('createNumChecks') ?: true
+    nameByTopic = createSchemaProperties.getProperty('nameByTopic') ?: true
+    strokeArcs = createSchemaProperties.getProperty('strokeArcs') ?: true
+    // TODO: createImportTabs = true ?
+    createBasketCol = createSchemaProperties.getProperty('createBasketCol') ?: false
+    createDatasetCol = createSchemaProperties.getProperty('createDatasetCol') ?: false
+}
+
+task configureSchemaCommon(type: SqlExecutor) {
+    group = 'Configure schema' 
+    description = 'Set comment on schema, grant permissions, and more'
+    doLast {
+        println "DB schema ${schemaName} configured"
+    }
+    database = [dbUri, dbUser, dbPwd]
+    sqlFiles = [
+        // TODO: would ....text work, too?
+        rootProject.file('comment_on_schema.sql').getAbsolutePath()
+    ]
+    sqlParameters = [dbSchema: schemaName]
+}
