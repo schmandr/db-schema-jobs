@@ -1,0 +1,7 @@
+task dropSchema() {
+    group = 'Drop schema'
+    description = 'Test'
+    doLast {
+        println "Debug output: ${project.schemaName} ${project.createSchemaProperties.getProperty('strokeArcs')}"
+    }
+}
