@@ -6,10 +6,10 @@ apply plugin: 'ch.so.agi.gretl'
 
 // Load properties file which is located in the project directory of the specific schema
 project.ext.createSchemaProperties = new Properties()
-project(':specific-schema-tasks').file('createSchema.properties').withInputStream { project.createSchemaProperties.load(it) }
+project(':topic-schema-tasks').file('createSchema.properties').withInputStream { project.createSchemaProperties.load(it) }
 
 // Get the suffix of the schema directory (if any)
-// TODO: won't work for pub schemas (..._pub_v1)
+// TODO: won't work for pub schemas (..._pub_v1) and similar cases
 def schemaSuffix = ''
 if ( project.property('schemaDirName').split('_').size() > 1 ) {
     schemaSuffix = '_' + project.property('schemaDirName').split('_').last()
@@ -22,7 +22,7 @@ def determinedSchemaName = createSchemaProperties.getProperty('schemaName') ?: p
 project.ext.set('schemaName', determinedSchemaName)
 
 // Determine automatically in which DB to create the schema
-// TODO: won't work (..._pub_v1)
+// TODO: won't actually work (..._pub_v1)
 def targetDbName = ( project.property('schemaDirName').endsWith('_pub')  ) ? 'pub' : 'edit'
 // However, if the dbName property is set it must override the default
 if ( project.hasProperty('dbName') ) {
@@ -37,7 +37,7 @@ project.ext {
 
 
 
-task dropSchemaCommon(type: SqlExecutor) {
+task dropSchemaShared(type: SqlExecutor) {
     group = 'Drop schema'
     description = 'Drop DB schema and schema roles if they exist'
     doLast {
@@ -49,7 +49,7 @@ task dropSchemaCommon(type: SqlExecutor) {
     sqlParameters = [dbSchema: project.schemaName]
 }
 
-task createRolesCommon(type: SqlExecutor) {
+task createRolesShared(type: SqlExecutor) {
     group = 'Create schema'
     description = 'Create roles for reading from and writing to the DB schema'
     doLast {
@@ -60,10 +60,10 @@ task createRolesCommon(type: SqlExecutor) {
     sqlParameters = [dbSchema: project.schemaName]
 }
 
-task createSchemaCommon(type: Ili2pgImportSchema) {
+task createSchemaShared(type: Ili2pgImportSchema) {
     group = 'Create schema'
     description = 'Create DB schema and tables according to INTERLIS model'
-    dependsOn 'createRolesCommon'
+    dependsOn 'createRolesShared'
     doLast {
         println "DB schema ${project.schemaName} and tables created"
     }
@@ -87,15 +87,15 @@ task createSchemaCommon(type: Ili2pgImportSchema) {
     createDatasetCol = project.createSchemaProperties.getProperty('createDatasetCol') ?: false
 }
 
-task configureSchemaCommon(type: SqlExecutor) {
-    group = 'Configure schema' 
+task configureSchemaShared(type: SqlExecutor) {
+    group = 'Configure schema'
     description = 'Set comment on schema, grant permissions, and more'
     doLast {
         println "DB schema ${project.schemaName} configured"
     }
     database = [project.dbUri, project.dbUser, project.dbPwd]
     sqlFiles = [
-        project(':specific-schema-tasks').file('comment_on_schema.sql').getPath()
+        project(':topic-schema-tasks').file('comment_on_schema.sql').getPath()
     ]
     sqlParameters = [dbSchema: project.schemaName]
 }

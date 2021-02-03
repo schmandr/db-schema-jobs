@@ -1,0 +1,3 @@
+rootProject.name = 'shared-schema-tasks'
+include 'topic-schema-tasks'
+project(':topic-schema-tasks').projectDir = file("../../topics/${topicName}/${schemaDirName}")

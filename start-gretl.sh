@@ -90,4 +90,4 @@ docker run -i --rm --name gretl \
     --user $UID \
     ${network_string} \
     "$docker_image" "-c" \
-        "/usr/local/bin/run-jnlp-client > /dev/null 2>&1;cd /home/gradle/project/common/schema;$gretl_cmd"
+        "/usr/local/bin/run-jnlp-client > /dev/null 2>&1;cd /home/gradle/project/shared/schema;$gretl_cmd"

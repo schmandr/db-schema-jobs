@@ -1,4 +1,0 @@
-rootProject.name = 'common-schema-tasks'
-// better?: rootProject.name = 'shared-schema-tasks'
-include 'specific-schema-tasks'
-project(':specific-schema-tasks').projectDir = file("../../topics/${topicName}/${schemaDirName}")
