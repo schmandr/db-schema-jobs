@@ -9,23 +9,21 @@ project.ext.createSchemaProperties = new Properties()
 project(':topic-schema-tasks').file('createSchema.properties').withInputStream { project.createSchemaProperties.load(it) }
 
 // Get the suffix of the schema directory (if any)
-// TODO: won't work for pub schemas (..._pub_v1) and similar cases
 def schemaSuffix = ''
-if ( project.property('schemaDirName').split('_').size() > 1 ) {
-    schemaSuffix = '_' + project.property('schemaDirName').split('_').last()
+if ( project.property('schemaDirName').split('schema_').size() > 1 ) {
+    schemaSuffix = '_' + project.property('schemaDirName').split('schema_').getAt(1)
 }
 
 // Get the schema name either from the properties file if it's set,
 // or construct the schema name from the topic directory name and the schema directory suffix
-def determinedSchemaName = createSchemaProperties.getProperty('schemaName') ?: project.property('topicName') + schemaSuffix
-// (this uses the Elvis operator, http://groovy-lang.org/operators.html#_elvis_operator)
-project.ext.set('schemaName', determinedSchemaName)
+// (This uses the Elvis operator, http://groovy-lang.org/operators.html#_elvis_operator)
+def schema = createSchemaProperties.getProperty('schemaName') ?: project.property('topicName') + schemaSuffix
+project.ext.set('schemaName', schema)
 
 // Determine automatically in which DB to create the schema
-// TODO: won't actually work (..._pub_v1)
-def targetDbName = ( project.property('schemaDirName').endsWith('_pub')  ) ? 'pub' : 'edit'
-// However, if the dbName property is set it must override the default
-if ( project.hasProperty('dbName') ) {
+def targetDbName = ( project.property('schemaDirName').contains('_pub')  ) ? 'pub' : 'edit'
+// However, if the dbName property is set and is not null it must override the default
+if ( project.hasProperty('dbName') && project.dbName) {
     targetDbName = project.property('dbName')
 }
 
