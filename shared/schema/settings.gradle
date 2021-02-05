@@ -1,3 +1,10 @@
 rootProject.name = 'shared-schema-tasks'
+
 include 'topic-schema-tasks'
 project(':topic-schema-tasks').projectDir = file("../../topics/${topicName}/${schemaDirName}")
+
+include 'shared-privilege-tasks'
+project(':shared-privilege-tasks').projectDir = file("../../../db-schema-privileges/shared/grant")
+
+include 'topic-privilege-tasks'
+project(':topic-privilege-tasks').projectDir = file("../../../db-schema-privileges/topics/${topicName}/grant_${schemaDirName}")

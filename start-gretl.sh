@@ -85,6 +85,7 @@ mkdir -p /tmp/gretl-share
 docker run -i --rm --name gretl \
     --entrypoint="/bin/sh" \
     -v "$jobs_directory":/home/gradle/project \
+    -v "$jobs_directory/../db-schema-privileges":/home/gradle/db-schema-privileges \
     -v /tmp/gretl-share:/tmp/gretl-share \
      ${envvars_string} \
     --user $UID \
