@@ -92,8 +92,6 @@ task configureSchemaShared(type: SqlExecutor) {
         println "DB schema ${project.schemaName} configured"
     }
     database = [project.dbUri, project.dbUser, project.dbPwd]
-    sqlFiles = [
-        project(':topic-schema-tasks').file('comment_on_schema.sql').getPath()
-    ]
+    sqlFiles = [project(':topic-schema-tasks').file('comment_on_schema.sql').getPath()]
     sqlParameters = [dbSchema: project.schemaName]
 }
