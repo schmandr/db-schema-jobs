@@ -7,4 +7,4 @@ include 'shared-privilege-tasks'
 project(':shared-privilege-tasks').projectDir = file("../../../db-schema-privileges/shared/grant")
 
 include 'topic-privilege-tasks'
-project(':topic-privilege-tasks').projectDir = file("../../../db-schema-privileges/topics/${topicName}/grant_${schemaDirName}")
+project(':topic-privilege-tasks').projectDir = file("../../../db-schema-privileges/topics/${topicName}/${schemaDirName.replace('schema', 'grant')}")
