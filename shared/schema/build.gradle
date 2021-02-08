@@ -18,7 +18,8 @@ if ( project.property('schemaDirName').split('schema_').size() > 1 ) {
 // or construct the schema name from the topic directory name and the schema directory suffix
 // (This uses the Elvis operator, http://groovy-lang.org/operators.html#_elvis_operator)
 def schema = createSchemaProperties.getProperty('schemaName') ?: project.property('topicName') + schemaSuffix
-project.ext.set('schemaName', schema)
+def schemaVersion = createSchemaProperties.getProperty('schemaVersion') as Integer
+project.ext.set('schemaName', "${schema}_v${schemaVersion}".toString())
 
 // Determine automatically in which DB to create the schema
 def targetDbName = ( project.property('schemaDirName').contains('_pub')  ) ? 'pub' : 'edit'
