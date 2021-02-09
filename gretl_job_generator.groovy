@@ -6,6 +6,8 @@ def gretlJobFileName = 'createSchema.properties'
 def jenkinsfileName = 'Jenkinsfile'
 def jobPropertiesFileName = 'job.properties'
 
+def jobNamePrefix = 'db_schema_'
+
 // override default values if environment variables are set
 // (Disable overriding for now):
 // if ("${GRETL_JOB_FILE_PATH}") {
@@ -36,7 +38,7 @@ for (jobFile in jobFiles) {
   def topicName = jobFile.split('/').getAt(-3)
   def schemaDirName = jobFile.split('/').getAt(-2)
   
-  def jobName = "${topicName}${schemaDirName.minus('schema')}"
+  def jobName = "${jobNamePrefix}${topicName}${schemaDirName.minus('schema')}"
   println 'Job ' + jobName
 //  println 'script file: ' + relativeScriptPath
 
@@ -80,7 +82,7 @@ for (jobFile in jobFiles) {
     // the usual parameters below here:
     if (!productionEnv) { // we don't want the BRANCH parameter in production environment
       parameters {
-        stringParam('BRANCH', 'master', 'Name of branch to check out')
+        stringParam('BRANCH', 'main', 'Name of branch to check out')
       }
     }
     if (properties.getProperty('parameters.fileParam') != 'none') {
