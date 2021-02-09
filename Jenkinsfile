@@ -1,7 +1,7 @@
 node('master') { // need a few lines of scripted pipeline before the declarative pipeline...
     stage('Prepare') {
         //gretlJobRepoUrl = env.GRETL_JOB_REPO_URL_DB_SCHEMA
-        gretlJobRepoUrl = https://github.com/schmandr/db-schema-jobs.git
+        gretlJobRepoUrl = 'https://github.com/schmandr/db-schema-jobs.git'
     }
 }
 

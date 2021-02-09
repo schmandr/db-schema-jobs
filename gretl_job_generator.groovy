@@ -34,9 +34,7 @@ for (jobFile in jobFiles) {
 
   // get the topic name (is at position 3 from the end of the jobFile path)
   def topicName = jobFile.split('/').getAt(-3)
-  println topicName
   def schemaDirName = jobFile.split('/').getAt(-2)
-  println schemaDirName
   
   def jobName = "${topicName}${schemaDirName.minus('schema')}"
   println 'Job ' + jobName
@@ -73,10 +71,10 @@ for (jobFile in jobFiles) {
   pipelineJob(jobName) {
     // if possible find different solution than setting as parameters:
     parameters {
-      stringParam('TOPIC_NAME', ${topicName}, 'Name of the topic')
+      stringParam('TOPIC_NAME', "${topicName}", 'Name of the topic')
     }
     parameters {
-      stringParam('SCHEMA_DIRECTORY_NAME', ${schemaDirName}, 'Name of the folder containing the schema specific definitions')
+      stringParam('SCHEMA_DIRECTORY_NAME', "${schemaDirName}", 'Name of the folder containing the schema specific definitions')
     }
 
     // the usual parameters below here:
