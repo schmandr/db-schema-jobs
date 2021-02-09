@@ -21,7 +21,7 @@ pipeline {
                 // TODO: Store in a variable
                 dir('shared/schema') {
                     // TODO: Make configurable via a parameter
-                    sh 'gretl configureSchema'
+                    sh "gretl -PtopicName=${params.TOPIC_NAME} -PschemaDirName=${params.SCHEMA_DIRECTORY_NAME} configureSchema"
                     //sh 'gretl grantPermissions'
                 }
             }
