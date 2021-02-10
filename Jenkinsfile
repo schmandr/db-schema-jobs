@@ -15,10 +15,10 @@ pipeline {
     stages {
         stage('DB schema') {
             agent { label 'gretl-ili2pg4' }
-            input {
-                message "Just to be sure... Do you really want to run the potentially dangerous tasks \'${params.GRADLE_TASKS}\'?"
-                ok "OK"
-            }
+//             input {
+//                 message "Just to be sure... Do you really want to run the potentially dangerous tasks \'${params.GRADLE_TASKS}\'?"
+//                 ok "OK"
+//             }
             steps {
                 script { currentBuild.description = "${params.buildDescription}" }
                 git url: "${gretlJobRepoUrl}", branch: "${params.BRANCH ?: 'main'}", changelog: false
