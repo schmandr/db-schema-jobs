@@ -1,7 +1,0 @@
-task configureSchema() {
-    group = 'Configure schema'
-    description = 'Demo overriding task'
-    doLast {
-        println "Debug output: Schema name: ${project.schemaName}. strokeArcs: ${project.createSchemaProperties.getProperty('strokeArcs')}"
-    }
-}

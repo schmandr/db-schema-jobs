@@ -1,0 +1,19 @@
+import ch.so.agi.gretl.tasks.*
+import ch.so.agi.gretl.api.TransferSet
+
+apply plugin: 'ch.so.agi.gretl'
+
+
+task configureSchema(type: SqlExecutor) {
+    group = 'Configure schema'
+    description = 'Override: Set comment on schema, grant permissions, and more'
+    doLast {
+        println "DB schema ${project.schemaName} configured"
+    }
+    database = [project.dbUri, project.dbUser, project.dbPwd]
+    sqlFiles = [
+        'comment_on_schema.sql',
+        'create_view.sql'
+    ]
+    sqlParameters = [dbSchema: project.schemaName]
+}
