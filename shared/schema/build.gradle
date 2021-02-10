@@ -19,6 +19,9 @@ if ( project.property('schemaDirName').split('schema_').size() > 1 ) {
 // (This uses the Elvis operator, http://groovy-lang.org/operators.html#_elvis_operator)
 def schema = createSchemaProperties.getProperty('schemaName') ?: project.property('topicName') + schemaSuffix
 def schemaVersion = createSchemaProperties.getProperty('schemaVersion') as Integer
+if (!schemaVersion) {
+    throw new Exception("The schemaVersion property is missing")
+}
 project.ext.set('schemaName', "${schema}_v${schemaVersion}".toString())
 
 // Determine automatically in which DB to create the schema
