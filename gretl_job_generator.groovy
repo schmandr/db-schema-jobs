@@ -20,14 +20,11 @@ def jobNamePrefix = 'db_schema_'
 // }
 
 
-def baseDir = SEED_JOB.getWorkspace().toString()
-println 'base dir: ' + baseDir
-
 // search for files (gretlJobFileName) that are causing the creation of a GRETL-Job
 def jobFilePattern = "${gretlJobFilePath}/${gretlJobFileName}"
 println 'job file pattern: ' + jobFilePattern
 
-def jobFiles = new FileNameFinder().getFileNames(baseDir, jobFilePattern)
+def jobFiles = new FileNameFinder().getFileNames(WORKSPACE, jobFilePattern)
 
 
 // generate the jobs
@@ -42,11 +39,11 @@ for (jobFile in jobFiles) {
   println 'Job ' + jobName
 //  println 'script file: ' + relativeScriptPath
 
-  def pipelineFilePath = "${baseDir}/${jenkinsfileName}"
+  def pipelineFilePath = "${WORKSPACE}/${jenkinsfileName}"
 
   // check if job provides its own Jenkinsfile
   def customPipelineFilePath = "${topicName}/${schemaDirName}/${jenkinsfileName}"
-  if (new File(baseDir, customPipelineFilePath).exists()) {
+  if (new File(WORKSPACE, customPipelineFilePath).exists()) {
     pipelineFilePath = customPipelineFilePath
     println 'custom pipeline file found: ' + customPipelineFilePath
   }
@@ -62,7 +59,7 @@ for (jobFile in jobFiles) {
     'triggers.cron':''
   ])
   def propertiesFilePath = "${topicName}/${schemaDirName}/${jobPropertiesFileName}"
-  def propertiesFile = new File(baseDir, propertiesFilePath)
+  def propertiesFile = new File(WORKSPACE, propertiesFilePath)
   if (propertiesFile.exists()) {
     println 'properties file found: ' + propertiesFilePath
     properties.load(new FileReader(propertiesFile))
