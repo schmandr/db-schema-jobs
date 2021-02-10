@@ -1,5 +1,3 @@
-println "BUILD_NUMBER = ${BUILD_NUMBER}"
-
 // set default values
 def gretlJobFilePath = 'topics/*/*'
 def gretlJobFileName = 'createSchema.properties'
@@ -7,6 +5,7 @@ def jenkinsfileName = 'Jenkinsfile'
 def jobPropertiesFileName = 'job.properties'
 
 def jobNamePrefix = 'db_schema_'
+
 
 // override default values if environment variables are set
 // (Disable overriding for now):
@@ -20,34 +19,36 @@ def jobNamePrefix = 'db_schema_'
 // }
 
 
+
 // search for files (gretlJobFileName) that are causing the creation of a GRETL-Job
 def jobFilePattern = "${gretlJobFilePath}/${gretlJobFileName}"
 println 'job file pattern: ' + jobFilePattern
-
 def jobFiles = new FileNameFinder().getFileNames(WORKSPACE, jobFilePattern)
 
 
 // generate the jobs
 println 'generating the jobs...'
 for (jobFile in jobFiles) {
-
   // get the topic name (is at position 3 from the end of the jobFile path)
   def topicName = jobFile.split('/').getAt(-3)
+  // get the name of the directory containing the schema definitions (is at position 2 from the end of the jobFile path)
   def schemaDirName = jobFile.split('/').getAt(-2)
-  
+
+  // define the job name
   def jobName = "${jobNamePrefix}${topicName}${schemaDirName.minus('schema')}"
   println 'Job ' + jobName
-//  println 'script file: ' + relativeScriptPath
 
+  // set the path to the default Jenkinsfile
   def pipelineFilePath = "${WORKSPACE}/${jenkinsfileName}"
-
   // check if job provides its own Jenkinsfile
   def customPipelineFilePath = "${topicName}/${schemaDirName}/${jenkinsfileName}"
   if (new File(WORKSPACE, customPipelineFilePath).exists()) {
     pipelineFilePath = customPipelineFilePath
     println 'custom pipeline file found: ' + customPipelineFilePath
   }
+  // read Jenkinsfile content
   def pipelineScript = readFileFromWorkspace(pipelineFilePath)
+
 
   // set defaults for job properties
   def properties = new Properties([
