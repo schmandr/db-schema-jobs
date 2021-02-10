@@ -27,7 +27,7 @@ project.ext.set('schemaName', "${schema}_v${schemaVersion}".toString())
 // Determine automatically in which DB to create the schema
 def targetDbName = ( project.property('schemaDirName').contains('_pub')  ) ? 'pub' : 'edit'
 // However, if the dbName property is set and is not null it must override the default
-if ( project.hasProperty('dbName') && project.dbName) {
+if ( project.hasProperty('dbName') && project.dbName && project.dbName != 'default') {
     targetDbName = project.property('dbName')
 }
 

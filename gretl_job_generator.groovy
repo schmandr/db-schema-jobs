@@ -116,6 +116,10 @@ for (jobFile in jobFiles) {
     parameters {
       choiceParam('GRADLE_TASKS', ['configureSchema', 'createSchema configureSchema', 'dropSchema createSchema configureSchema', 'dropSchema'], 'Select which tasks to execute')
     }
+    // TODO: Maybe better solution would be creating two separate jobs somehow, one for each DB?
+    parameters {
+      choiceParam('TARGET_DB', ['default', 'edit', 'pub'], 'Optional: Override the default target DB for this schema')
+    }
     // Hack: Use choiceParam with just one choice for parameters that must not be modified by the user
     parameters {
       choiceParam('TOPIC_NAME', ["${topicName}"], 'Unmodifiable: Name of the data topic')
