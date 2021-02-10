@@ -71,15 +71,6 @@ for (jobFile in jobFiles) {
   def productionEnv = ("${OPENSHIFT_BUILD_NAMESPACE}" == 'agi-gretl-production')
 
   pipelineJob(jobName) {
-    // if possible find different solution than setting as parameters:
-    parameters {
-      stringParam('TOPIC_NAME', "${topicName}", 'Name of the topic')
-    }
-    parameters {
-      stringParam('SCHEMA_DIRECTORY_NAME', "${schemaDirName}", 'Name of the folder containing the schema specific definitions')
-    }
-
-    // the usual parameters below here:
     if (!productionEnv) { // we don't want the BRANCH parameter in production environment
       parameters {
         stringParam('BRANCH', 'main', 'Name of branch to check out')
@@ -117,10 +108,21 @@ for (jobFile in jobFiles) {
       }
     }
     if (properties.getProperty('nodeLabel') != null) {
+      // Hack: Use choiceParam with just one choice for parameters that must not be modified by the user
       parameters {
-        choiceParam('nodeLabel', [properties.getProperty('nodeLabel')], 'Label of the node that must run the job')
+        choiceParam('nodeLabel', [properties.getProperty('nodeLabel')], 'Unmodifiable: Label of the node that must run the job')
       }
     }
+
+    // Parameters for DB schema jobs:
+    // Hack: Use choiceParam with just one choice for parameters that must not be modified by the user
+    parameters {
+      choiceParam('TOPIC_NAME', ["${topicName}"], 'Unmodifiable: Name of the data topic')
+    }
+    parameters {
+      choiceParam('SCHEMA_DIRECTORY_NAME', ["${schemaDirName}"], 'Unmodifiable: Name of the folder containing the schema specific definitions')
+    }
+
     definition {
       cps {
         script(pipelineScript)
