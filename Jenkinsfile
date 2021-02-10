@@ -20,8 +20,7 @@ pipeline {
                 git url: "${gretlJobRepoUrl}", branch: "${params.BRANCH ?: 'main'}", changelog: false
                 // TODO: Store in a variable
                 dir('shared/schema') {
-                    // TODO: Make configurable via a parameter
-                    sh "gretl -PtopicName=${params.TOPIC_NAME} -PschemaDirName=${params.SCHEMA_DIRECTORY_NAME} configureSchema"
+                    sh "gretl -PtopicName=${params.TOPIC_NAME} -PschemaDirName=${params.SCHEMA_DIRECTORY_NAME} ${params.GRADLE_TASKS}"
                     //sh 'gretl grantPermissions'
                 }
             }

@@ -113,6 +113,9 @@ for (jobFile in jobFiles) {
     }
 
     // Parameters for DB schema jobs:
+    parameters {
+      choiceParam('GRADLE_TASKS', ['configureSchema', 'createSchema configureSchema', 'dropSchema createSchema configureSchema', 'dropSchema'], 'Select which tasks to execute')
+    }
     // Hack: Use choiceParam with just one choice for parameters that must not be modified by the user
     parameters {
       choiceParam('TOPIC_NAME', ["${topicName}"], 'Unmodifiable: Name of the data topic')
