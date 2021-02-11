@@ -24,17 +24,34 @@ if (!schemaVersion) {
 }
 project.ext.set('schemaName', "${schema}_v${schemaVersion}".toString())
 
-// Determine automatically in which DB to create the schema
-def targetDbName = ( project.property('schemaDirName').contains('_pub')  ) ? 'pub' : 'edit'
-// However, if the dbName property is set and is not null it must override the default
-if ( project.hasProperty('dbName') && project.dbName && project.dbName != 'default') {
-    targetDbName = project.property('dbName')
+def dbName
+// Take the dbName property if it's set and if it's not null
+if ( project.hasProperty('dbName') && project.dbName) {
+    dbName = project.property('dbName')
+} else {
+    // Determine the DB name from the createSchema Property file or use the default ('edit')
+    def databases = createSchemaProperties.getProperty('databases') ?: 'edit'
+    // TODO: Translate. Plus improve Exception message.
+    // Wenn mehrere DBs im Properties File angegeben sind, kann das build.gradle dies nicht selber handeln.
+    // Stattdessen muss man das Skript nochmals aufrufen und die Property dbName übergeben (z.B. -PdbName=my_db).
+    // Und dann nochmals für die weiteren DBs.
+    if (databases.split(',').size() == 1) {
+        dbName = databases
+    } else {
+        throw new Exception("Multiple databases defined in property file: ${databases}. Please pass the dbName property specifying which DB to choose.")
+    }
 }
 
-project.ext {
-    dbUri = ( targetDbName == 'pub' ) ? project.property('dbUriPub') : project.property('dbUriEdit')
-    dbUser = ( targetDbName == 'pub' ) ? project.property('dbUserPub') : project.property('dbUserEdit')
-    dbPwd = ( targetDbName == 'pub' ) ? project.property('dbPwdPub') : project.property('dbPwdEdit')
+if ( dbName == 'edit' ) {
+    project.ext.dbUri = project.property('dbUriEdit')
+    project.ext.dbUser = project.property('dbUserEdit')
+    project.ext.dbPwd = project.property('dbPwdEdit')
+} else if ( dbName == 'pub' ) {
+    project.ext.dbUri = project.property('dbUriPub')
+    project.ext.dbUser = project.property('dbUserPub')
+    project.ext.dbPwd = project.property('dbPwdPub')
+} else {
+    throw new Exception("No DB connection parameters defined for DB ${dbName}")
 }
 
 
