@@ -1,2 +1,2 @@
-CREATE ROLE ${dbSchema}_read;
-CREATE ROLE ${dbSchema}_write;
+CREATE ROLE ${dbSchema}${roleSuffix}_read;
+CREATE ROLE ${dbSchema}${roleSuffix}_write;

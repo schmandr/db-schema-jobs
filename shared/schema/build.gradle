@@ -54,6 +54,13 @@ if ( dbName == 'edit' ) {
     throw new Exception("No DB connection parameters defined for DB ${dbName}")
 }
 
+// Decide if the role names need a suffix (this is the case when a schema is to be placed in multiple DBs)
+// And set the role suffix as extra property (empty string is the default suffix)
+project.ext.set('roleSfx', '')
+if ( createSchemaProperties.getProperty('databases') && createSchemaProperties.getProperty('databases').split(',').size()> 1 ) {
+    project.ext.set('roleSfx', "_${dbName}db".toString())
+}
+
 
 
 task dropSchemaShared(type: SqlExecutor) {
@@ -64,8 +71,7 @@ task dropSchemaShared(type: SqlExecutor) {
     }
     database = [project.dbUri, project.dbUser, project.dbPwd]
     sqlFiles = ['drop_schema.sql', 'drop_role.sql']
-    // Dies wird z.B.bei Publikationsschemen, die zusätzlich auch auf der Edit-DB vorhanden sein müssen, Probleme machen; Abhilfe: Die Rollennamen sollen auch die DB-Namen enthalten, z.B.: editdb_arp_nutzungsplanung_pub_read, pubdb_arp_nutzungsplanung_pub_read; oder noch besser: Falls man in Jenkins die voreingestellte DB umstellt, wird zusätzlich ein Parameter rolePrefix o.ä. gesetzt, und es wird nur dann der DB-Name dem Gruppennamen vorangestellt.
-    sqlParameters = [dbSchema: project.schemaName]
+    sqlParameters = [dbSchema: project.schemaName, roleSuffix: project.roleSfx]
 }
 
 task createRolesShared(type: SqlExecutor) {
@@ -76,7 +82,7 @@ task createRolesShared(type: SqlExecutor) {
     }
     database = [project.dbUri, project.dbUser, project.dbPwd]
     sqlFiles = ['create_role.sql']
-    sqlParameters = [dbSchema: project.schemaName]
+    sqlParameters = [dbSchema: project.schemaName, roleSuffix: project.roleSfx]
 }
 
 task createSchemaShared(type: Ili2pgImportSchema) {
