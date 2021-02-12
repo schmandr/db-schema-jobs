@@ -44,7 +44,7 @@ pipeline {
                 }
                 // check out privileges Git repo
                 dir(dbSchemaPrivilegesDir) {
-                    git url: "${privilegesRepoUrl}", branch: "${params.BRANCH ?: 'main'}", changelog: false, credentialsId: "${openshiftProjectName}-db-schema-privileges-deploy-key"
+                    git url: "${privilegesRepoUrl}", branch: 'main', changelog: false, credentialsId: "${openshiftProjectName}-db-schema-privileges-deploy-key"
                 }
             }
         }
