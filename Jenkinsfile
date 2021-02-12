@@ -21,13 +21,25 @@ pipeline {
 //                ok "OK"
 //            }
             steps {
-                script { currentBuild.description = "${params.buildDescription}" }
-                git url: "${gretlJobRepoUrl}", branch: "${params.BRANCH ?: 'main'}", changelog: false
+                // set variables
                 script {
-                    def createSchemaProperties = readProperties file: "topics/${params.TOPIC_NAME}/${params.SCHEMA_DIRECTORY_NAME}/createSchema.properties"
-                    def databasesProperty = createSchemaProperties['databases'] ?: 'edit'
-                    // must be a undeclared variable so it goes into the script binding:
-                    databases = databasesProperty.split(',')
+                    dbSchemaJobsDir = 'db-schema-jobs'
+                    dbSchemaPrivilegesDir = 'db-schema-privileges'
+                    dbSchemaJobsSharedSchemaDirPath = 'shared/schema'
+                }
+                // set description of the build
+                script {
+                    currentBuild.description = "${params.buildDescription}"
+                }
+                // check out Git repo and read a property value from a file
+                dir(dbSchemaJobsDir) {
+                    git url: "${gretlJobRepoUrl}", branch: "${params.BRANCH ?: 'main'}", changelog: false
+                    script {
+                        def createSchemaProperties = readProperties file: "topics/${params.TOPIC_NAME}/${params.SCHEMA_DIRECTORY_NAME}/createSchema.properties"
+                        def databasesProperty = createSchemaProperties['databases'] ?: 'edit'
+                        // must be a undeclared variable so it goes into the script binding:
+                        databases = databasesProperty.split(',')
+                    }
                 }
             }
         }
@@ -38,10 +50,8 @@ pipeline {
                 }
             }
             steps {
-                // TODO: Store in a variable
-                dir('shared/schema') {
+                dir("${dbSchemaJobsDir}/${dbSchemaJobsSharedSchemaDirPath}") {
                     sh "gretl -PtopicName=${params.TOPIC_NAME} -PschemaDirName=${params.SCHEMA_DIRECTORY_NAME} -PdbName=edit ${params.GRADLE_TASKS}"
-                    //sh 'gretl grantPermissions'
                 }
             }
         }
@@ -52,10 +62,8 @@ pipeline {
                 }
             }
             steps {
-                // TODO: Store in a variable
-                dir('shared/schema') {
+                dir("${dbSchemaJobsDir}/${dbSchemaJobsSharedSchemaDirPath}") {
                     sh "gretl -PtopicName=${params.TOPIC_NAME} -PschemaDirName=${params.SCHEMA_DIRECTORY_NAME} -PdbName=pub ${params.GRADLE_TASKS}"
-                    //sh 'gretl grantPermissions'
                 }
             }
         }
