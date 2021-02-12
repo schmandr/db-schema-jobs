@@ -1,10 +1,11 @@
 node('master') { // need a few lines of scripted pipeline before the declarative pipeline...
     stage('Prepare') {
-        //gretlJobRepoUrl = env.GRETL_JOB_REPO_URL_DB_SCHEMA
-        gretlJobRepoUrl = 'https://github.com/schmandr/db-schema-jobs.git'
+        // store a couple of environment variable values that are available on master only
+        gretlJobRepoUrl = env.GRETL_JOB_REPO_URL_DB_SCHEMA
+        privilegesRepoUrl = env.GRETL_JOB_REPO_URL_DB_SCHEMA_PRIVILEGES
+        openshiftProjectName = env.PROJECT_NAME
     }
 }
-
 pipeline {
     agent {
         label 'gretl-ili2pg4'
@@ -37,9 +38,13 @@ pipeline {
                     script {
                         def createSchemaProperties = readProperties file: "topics/${params.TOPIC_NAME}/${params.SCHEMA_DIRECTORY_NAME}/createSchema.properties"
                         def databasesProperty = createSchemaProperties['databases'] ?: 'edit'
-                        // must be a undeclared variable so it goes into the script binding:
+                        // must be an undeclared variable so it goes into the script binding:
                         databases = databasesProperty.split(',')
                     }
+                }
+                // check out privileges Git repo
+                dir(dbSchemaPrivilegesDir) {
+                    git url: "${privilegesRepoUrl}", branch: "${params.BRANCH ?: 'main'}", changelog: false, credentialsId: "${openshiftProjectName}-db-schema-privileges-deploy-key"
                 }
             }
         }
