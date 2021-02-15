@@ -65,32 +65,32 @@ if ( createSchemaProperties.getProperty('databases') && createSchemaProperties.g
 
 task dropSchemaShared(type: SqlExecutor) {
     group = 'Drop schema'
-    description = 'Drop DB schema and schema roles if they exist'
+    description = 'Drop DB schema and schema roles (roles for reading from and writing to the DB schema)'
     doLast {
-        println "DB schema ${project.schemaName} and schema roles dropped (or they did not exist)"
+        println "DB schema ${project.schemaName} and schema roles dropped"
     }
     database = [project.dbUri, project.dbUser, project.dbPwd]
     sqlFiles = ['drop_schema.sql', 'drop_role.sql']
     sqlParameters = [dbSchema: project.schemaName, roleSuffix: project.roleSfx]
 }
 
-task createRolesShared(type: SqlExecutor) {
+task createEmptySchemaShared(type: SqlExecutor) {
     group = 'Create schema'
-    description = 'Create roles for reading from and writing to the DB schema'
+    description = 'Create empty DB schema and schema roles (roles for reading from and writing to the DB schema)'
     doLast {
-        println "DB schema roles for schema ${project.schemaName} created"
+        println "DB schema ${project.schemaName} and schema roles created"
     }
     database = [project.dbUri, project.dbUser, project.dbPwd]
-    sqlFiles = ['create_role.sql']
+    sqlFiles = ['create_schema.sql', 'create_role.sql']
     sqlParameters = [dbSchema: project.schemaName, roleSuffix: project.roleSfx]
 }
 
 task createSchemaShared(type: Ili2pgImportSchema) {
     group = 'Create schema'
-    description = 'Create DB schema and tables according to INTERLIS model'
-    dependsOn 'createRolesShared'
+    description = 'Create tables in schema according to INTERLIS model'
+    dependsOn 'createEmptySchemaShared'
     doLast {
-        println "DB schema ${project.schemaName} and tables created"
+        println "Tables in DB schema ${project.schemaName} created according to INTERLIS model"
     }
     database = [project.dbUri, project.dbUser, project.dbPwd]
     dbschema = project.schemaName
