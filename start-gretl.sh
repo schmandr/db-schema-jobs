@@ -14,6 +14,8 @@
 # and mount it into the container by adding a line like this:
 # -v "$jobs_directory/../db-schema-privileges":/home/gradle/db-schema-privileges \
 
+declare gradle_root_project_dir='shared/schema'
+
 gradle_options=()
 
 while [ $# -gt 0 ]; do
@@ -60,9 +62,9 @@ fi
 
 declare gretl_cmd="gretl ${gradle_options[@]} -PgretlShare=/tmp/gretl-share"
 # Append additional properties to the GRETL command
-gretl_cmd+=" -PtopicName=$topic_name -PschemaDirName=$schema_directory_name"
+gretl_cmd+=" -PtopicName=${topic_name} -PschemaDirName=${schema_directory_name}"
 # Append dbName property to the GRETL command if the --db-name option is set
-if [[ -v db_name ]]; then gretl_cmd+=" -PdbName=$db_name"; fi
+if [[ -v db_name ]]; then gretl_cmd+=" -PdbName=${db_name}"; fi
 
 echo "======================================================="
 echo "Starts the GRETL runtime to execute the given GRETL job"
@@ -100,4 +102,4 @@ docker run -i --rm --name gretl \
     --user $UID \
     ${network_string} \
     "$docker_image" "-c" \
-        "/usr/local/bin/run-jnlp-client > /dev/null 2>&1;cd /home/gradle/project/shared/schema;$gretl_cmd"
+        "/usr/local/bin/run-jnlp-client > /dev/null 2>&1;cd /home/gradle/project/${gradle_root_project_dir};${gretl_cmd}"
