@@ -58,7 +58,11 @@ fi
 
 # For accessing the "GRETL share", use the gretlShare variable.
 
-declare gretl_cmd="gretl ${gradle_options[@]} -PtopicName=$topic_name -PschemaDirName=$schema_directory_name -PdbName=$db_name -PgretlShare=/tmp/gretl-share"
+declare gretl_cmd="gretl ${gradle_options[@]} -PgretlShare=/tmp/gretl-share"
+# Append additional properties to the GRETL command
+gretl_cmd+=" -PtopicName=$topic_name -PschemaDirName=$schema_directory_name"
+# Append dbName property to the GRETL command if the --db-name option is set
+if [[ -v db_name ]]; then gretl_cmd+=" -PdbName=$db_name"; fi
 
 echo "======================================================="
 echo "Starts the GRETL runtime to execute the given GRETL job"
