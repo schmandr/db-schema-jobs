@@ -8,6 +8,12 @@
 # See https://docs.gradle.org/current/userguide/command_line_interface.html
 # or the output of gradle -h for available options.
 
+# Note:
+# If we want to be able to run the schema tasks and the privilege tasks in one single run,
+# we could check out the privileges repository in a separate folder
+# and mount it into the container by adding a line like this:
+# -v "$jobs_directory/../db-schema-privileges":/home/gradle/db-schema-privileges \
+
 gradle_options=()
 
 while [ $# -gt 0 ]; do
@@ -85,7 +91,6 @@ mkdir -p /tmp/gretl-share
 docker run -i --rm --name gretl \
     --entrypoint="/bin/sh" \
     -v "$jobs_directory":/home/gradle/project \
-    -v "$jobs_directory/../db-schema-privileges":/home/gradle/db-schema-privileges \
     -v /tmp/gretl-share:/tmp/gretl-share \
      ${envvars_string} \
     --user $UID \
