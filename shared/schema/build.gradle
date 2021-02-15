@@ -114,7 +114,7 @@ task createSchemaShared(type: Ili2pgImportSchema) {
 
 task configureSchemaShared(type: SqlExecutor) {
     group = 'Configure schema'
-    description = 'Set comment on schema, grant permissions, and more'
+    description = 'Set comment on schema'
     doLast {
         println "DB schema ${project.schemaName} configured"
     }
