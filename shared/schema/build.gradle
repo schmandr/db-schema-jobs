@@ -6,7 +6,7 @@ apply plugin: 'ch.so.agi.gretl'
 
 // Load properties file which is located in the project directory of the specific schema
 project.ext.createSchemaProperties = new Properties()
-project(':topic-schema-tasks').file('createSchema.properties').withInputStream { project.createSchemaProperties.load(it) }
+project(':schema-tasks-topic').file('createSchema.properties').withInputStream { project.createSchemaProperties.load(it) }
 
 // Get the suffix of the schema directory (if any)
 def schemaSuffix = ''
@@ -119,6 +119,6 @@ task configureSchemaShared(type: SqlExecutor) {
         println "DB schema ${project.schemaName} configured"
     }
     database = [project.dbUri, project.dbUser, project.dbPwd]
-    sqlFiles = [project(':topic-schema-tasks').file('comment_on_schema.sql').getPath()]
+    sqlFiles = [project(':schema-tasks-topic').file('comment_on_schema.sql').getPath()]
     sqlParameters = [dbSchema: project.schemaName]
 }

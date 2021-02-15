@@ -1,10 +1,10 @@
-rootProject.name = 'shared-schema-tasks'
+rootProject.name = 'schema-tasks-shared'
 
-include 'topic-schema-tasks'
-project(':topic-schema-tasks').projectDir = file("../../topics/${topicName}/${schemaDirName}")
+include 'schema-tasks-topic'
+project(':schema-tasks-topic').projectDir = file("../../topics/${topicName}/${schemaDirName}")
 
-include 'shared-privilege-tasks'
-project(':shared-privilege-tasks').projectDir = file("../../../db-schema-privileges/shared/grant")
+include 'privilege-tasks-shared'
+project(':privilege-tasks-shared').projectDir = file("../../../db-schema-privileges/shared/grant")
 
-include 'topic-privilege-tasks'
-project(':topic-privilege-tasks').projectDir = file("../../../db-schema-privileges/topics/${topicName}/${schemaDirName.replace('schema', 'grant')}")
+include 'privilege-tasks-topic'
+project(':privilege-tasks-topic').projectDir = file("../../../db-schema-privileges/topics/${topicName}/${schemaDirName.replace('schema', 'grant')}")
