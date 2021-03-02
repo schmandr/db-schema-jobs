@@ -30,7 +30,7 @@ pipeline {
                 }
                 // set description of the build
                 script {
-                    currentBuild.description = "${params.buildDescription}"
+                    currentBuild.description = "${params.GRADLE_TASKS}"
                 }
                 // check out Git repo and read a property value from a file
                 dir(dbSchemaJobsDir) {
