@@ -11,7 +11,6 @@ pipeline {
         label 'gretl-ili2pg4'
     }
     options {
-        buildDiscarder(logRotator(numToKeepStr: '25'))
         disableConcurrentBuilds()
         timeout(time: 7, unit: 'DAYS')
     }

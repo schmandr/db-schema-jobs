@@ -53,7 +53,7 @@ for (jobFile in jobFiles) {
   // set defaults for job properties
   def properties = new Properties([
     'authorization.permissions':'nobody',
-    'logRotator.numToKeep':'15',
+    'logRotator.numToKeep':'unlimited',
     'parameters.fileParam':'none',
     'parameters.stringParam':'none',
     'triggers.upstream':'none',
