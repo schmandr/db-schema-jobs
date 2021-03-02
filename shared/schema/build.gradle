@@ -44,12 +44,12 @@ if ( project.hasProperty('dbName') && project.dbName) {
 
 if ( dbName == 'edit' ) {
     project.ext.dbUri = project.property('dbUriEdit')
-    project.ext.dbUser = project.property('dbUserEdit')
-    project.ext.dbPwd = project.property('dbPwdEdit')
+    project.ext.dbUser = project.property('dbUserDdlEdit')
+    project.ext.dbPwd = project.property('dbPwdDdlEdit')
 } else if ( dbName == 'pub' ) {
     project.ext.dbUri = project.property('dbUriPub')
-    project.ext.dbUser = project.property('dbUserPub')
-    project.ext.dbPwd = project.property('dbPwdPub')
+    project.ext.dbUser = project.property('dbUserDdlPub')
+    project.ext.dbPwd = project.property('dbPwdDdlPub')
 } else {
     throw new Exception("No DB connection parameters defined for DB ${dbName}")
 }
