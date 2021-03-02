@@ -1,2 +1,0 @@
-include ":common-schema-tasks"
-project(":common-schema-tasks").projectDir = file("../../../common/schema")
