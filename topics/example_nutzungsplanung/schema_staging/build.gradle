@@ -6,7 +6,7 @@ apply plugin: 'ch.so.agi.gretl'
 
 task configureSchema(type: SqlExecutor) {
     group = 'Configure schema'
-    description = 'Override: Set comment on schema, grant permissions, and more'
+    description = 'Override: Set comment on schema, and more'
     doLast {
         println "DB schema ${project.schemaName} configured"
     }
