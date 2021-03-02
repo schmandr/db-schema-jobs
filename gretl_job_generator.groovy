@@ -1,6 +1,6 @@
 // set default values
 def gretlJobFilePath = 'topics/*/*'
-def gretlJobFileName = 'createSchema.properties'
+def gretlJobFileName = 'schema.properties'
 def jenkinsfileName = 'Jenkinsfile'
 def jobPropertiesFileName = 'job.properties'
 

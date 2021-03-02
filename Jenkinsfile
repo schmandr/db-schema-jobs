@@ -27,6 +27,7 @@ pipeline {
                     dbSchemaJobsDir = 'db-schema-jobs'
                     dbSchemaPrivilegesDir = 'db-schema-privileges'
                     dbSchemaJobsSharedSchemaDirPath = 'shared/schema'
+                    schemaPropertiesFileName = 'schema.properties'
                 }
                 // set description of the build
                 script {
@@ -36,8 +37,8 @@ pipeline {
                 dir(dbSchemaJobsDir) {
                     git url: "${gretlJobRepoUrl}", branch: "${params.BRANCH ?: 'main'}", changelog: false
                     script {
-                        def createSchemaProperties = readProperties file: "topics/${params.TOPIC_NAME}/${params.SCHEMA_DIRECTORY_NAME}/createSchema.properties"
-                        def databasesProperty = createSchemaProperties['databases'] ?: 'edit'
+                        def schemaProperties = readProperties file: "topics/${params.TOPIC_NAME}/${params.SCHEMA_DIRECTORY_NAME}/${schemaPropertiesFileName}"
+                        def databasesProperty = schemaProperties['databases'] ?: 'edit'
                         // must be an undeclared variable so it goes into the script binding:
                         databases = databasesProperty.split(',')
                     }

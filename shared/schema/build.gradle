@@ -5,8 +5,8 @@ apply plugin: 'ch.so.agi.gretl'
 
 
 // Load properties file which is located in the project directory of the specific schema
-project.ext.createSchemaProperties = new Properties()
-project(':schema-tasks-topic').file('createSchema.properties').withInputStream { project.createSchemaProperties.load(it) }
+project.ext.schemaProperties = new Properties()
+project(':schema-tasks-topic').file('schema.properties').withInputStream { project.schemaProperties.load(it) }
 
 // Get the suffix of the schema directory (if any)
 def schemaSuffix = ''
@@ -17,8 +17,8 @@ if ( project.property('schemaDirName').split('schema_').size() > 1 ) {
 // Get the schema name either from the properties file if it's set,
 // or construct the schema name from the topic directory name and the schema directory suffix
 // (This uses the Elvis operator, http://groovy-lang.org/operators.html#_elvis_operator)
-def schema = createSchemaProperties.getProperty('schemaName') ?: project.property('topicName') + schemaSuffix
-def schemaVersion = createSchemaProperties.getProperty('schemaVersion') as Integer
+def schema = schemaProperties.getProperty('schemaName') ?: project.property('topicName') + schemaSuffix
+def schemaVersion = schemaProperties.getProperty('schemaVersion') as Integer
 if (!schemaVersion) {
     throw new Exception("The schemaVersion property is missing")
 }
@@ -31,7 +31,7 @@ if ( project.hasProperty('dbName') && project.dbName) {
     dbName = project.property('dbName')
 } else {
     // Determine the DB name from the createSchema Property file or use the default ('edit')
-    def databases = createSchemaProperties.getProperty('databases') ?: 'edit'
+    def databases = schemaProperties.getProperty('databases') ?: 'edit'
     // TODO: Translate. Plus improve Exception message.
     // Wenn mehrere DBs im Properties File angegeben sind, kann das build.gradle dies nicht selber handeln.
     // Stattdessen muss man das Skript nochmals aufrufen und die Property dbName übergeben (z.B. -PdbName=my_db).
@@ -58,7 +58,7 @@ if ( dbName == 'edit' ) {
 // Decide if the role names need a suffix (this is the case when a schema is to be placed in multiple DBs)
 // And set the role suffix as extra property (empty string is the default suffix)
 project.ext.set('roleSfx', '')
-if ( createSchemaProperties.getProperty('databases') && createSchemaProperties.getProperty('databases').split(',').size()> 1 ) {
+if ( schemaProperties.getProperty('databases') && schemaProperties.getProperty('databases').split(',').size()> 1 ) {
     project.ext.set('roleSfx', "_${dbName}db".toString())
 }
 
@@ -106,22 +106,22 @@ task createSchemaShared(type: Ili2pgImportSchema) {
     }
     database = [project.dbUri, project.dbUser, project.dbPwd]
     dbschema = project.schemaName
-    models = project.createSchemaProperties.getProperty('models')
+    models = project.schemaProperties.getProperty('models')
     // uses the Elvis operator, http://groovy-lang.org/operators.html#_elvis_operator
-    defaultSrsCode = project.createSchemaProperties.getProperty('defaultSrsCode') ?: 2056
-    createGeomIdx = project.createSchemaProperties.getProperty('createGeomIdx') ?: true
-    createFk = project.createSchemaProperties.getProperty('createFk') ?: true
-    createFkIdx = project.createSchemaProperties.getProperty('createFkIdx') ?: true
-    createUnique = project.createSchemaProperties.getProperty('createUnique') ?: true
-    createEnumTabs = project.createSchemaProperties.getProperty('createEnumTabs') ?: true
-    beautifyEnumDispName = project.createSchemaProperties.getProperty('beautifyEnumDispName') ?: true
-    createMetaInfo = project.createSchemaProperties.getProperty('createMetaInfo') ?: true
-    createNumChecks = project.createSchemaProperties.getProperty('createNumChecks') ?: true
-    nameByTopic = project.createSchemaProperties.getProperty('nameByTopic') ?: true
-    strokeArcs = project.createSchemaProperties.getProperty('strokeArcs') ?: true
+    defaultSrsCode =        project.schemaProperties.getProperty('defaultSrsCode') ?: 2056
+    createGeomIdx =         project.schemaProperties.getProperty('createGeomIdx') ?: true
+    createFk =              project.schemaProperties.getProperty('createFk') ?: true
+    createFkIdx =           project.schemaProperties.getProperty('createFkIdx') ?: true
+    createUnique =          project.schemaProperties.getProperty('createUnique') ?: true
+    createEnumTabs =        project.schemaProperties.getProperty('createEnumTabs') ?: true
+    beautifyEnumDispName =  project.schemaProperties.getProperty('beautifyEnumDispName') ?: true
+    createMetaInfo =        project.schemaProperties.getProperty('createMetaInfo') ?: true
+    createNumChecks =       project.schemaProperties.getProperty('createNumChecks') ?: true
+    nameByTopic =           project.schemaProperties.getProperty('nameByTopic') ?: true
+    strokeArcs =            project.schemaProperties.getProperty('strokeArcs') ?: true
     // TODO: createImportTabs = true ?
-    createBasketCol = project.createSchemaProperties.getProperty('createBasketCol') ?: false
-    createDatasetCol = project.createSchemaProperties.getProperty('createDatasetCol') ?: false
+    createBasketCol =       project.schemaProperties.getProperty('createBasketCol') ?: false
+    createDatasetCol =      project.schemaProperties.getProperty('createDatasetCol') ?: false
 }
 
 task configureSchemaShared(type: SqlExecutor) {
