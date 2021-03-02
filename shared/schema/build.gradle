@@ -104,9 +104,9 @@ task createSchemaShared(type: Ili2pgImportSchema) {
     doLast {
         println "Tables in DB schema ${project.schemaName} created according to INTERLIS model"
     }
-    database = [project.dbUri, project.dbUser, project.dbPwd]
-    dbschema = project.schemaName
-    models = project.schemaProperties.getProperty('models')
+    database =              [project.dbUri, project.dbUser, project.dbPwd]
+    dbschema =              project.schemaName
+    models =                project.schemaProperties.getProperty('models')
     // uses the Elvis operator, http://groovy-lang.org/operators.html#_elvis_operator
     defaultSrsCode =        project.schemaProperties.getProperty('defaultSrsCode') ?: 2056
     createGeomIdx =         project.schemaProperties.getProperty('createGeomIdx') ?: true
