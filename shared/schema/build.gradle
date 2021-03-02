@@ -23,6 +23,7 @@ if (!schemaVersion) {
     throw new Exception("The schemaVersion property is missing")
 }
 project.ext.set('schemaName', "${schema}_v${schemaVersion}".toString())
+project.ext.set('schemaNamePrevious', "${schema}_v${schemaVersion - 1}".toString())
 
 def dbName
 // Take the dbName property if it's set and if it's not null
@@ -72,6 +73,17 @@ task dropSchemaShared(type: SqlExecutor) {
     database = [project.dbUri, project.dbUser, project.dbPwd]
     sqlFiles = ['drop_schema.sql', 'drop_role.sql']
     sqlParameters = [dbSchema: project.schemaName, roleSuffix: project.roleSfx]
+}
+
+task dropPreviousSchemaVersionShared(type: SqlExecutor) {
+    group = 'Drop prevous schema version'
+    description = 'Drop previous DB schema version and schema roles (roles for reading from and writing to the DB schema)'
+    doLast {
+        println "DB schema ${project.schemaNamePrevious} and schema roles dropped"
+    }
+    database = [project.dbUri, project.dbUser, project.dbPwd]
+    sqlFiles = ['drop_schema.sql', 'drop_role.sql']
+    sqlParameters = [dbSchema: project.schemaNamePrevious, roleSuffix: project.roleSfx]
 }
 
 task createEmptySchemaShared(type: SqlExecutor) {
