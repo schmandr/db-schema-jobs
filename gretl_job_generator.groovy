@@ -66,7 +66,7 @@ for (jobFile in jobFiles) {
     properties.load(new FileReader(propertiesFile))
   }
   
-  def productionEnv = ("${OPENSHIFT_BUILD_NAMESPACE}" == 'agi-gretl-production')
+  def productionEnv = ("${PROJECT_NAME}" == 'agi-gretl-production')
 
   pipelineJob(jobName) {
     if (!productionEnv) { // we don't want the BRANCH parameter in production environment
